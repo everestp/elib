@@ -3,6 +3,7 @@ import createHttpError, { HttpError } from "http-errors";
 import { config } from "./config/config";
 import globalErrorHandler from "./middlewares/globalErrorHandlers";
 import userRouter from "./users/userRouter";
+import bookRouter from "./book/bookRouter";
 
 
 
@@ -22,6 +23,8 @@ app.get("/", (req, res, next) => {
      res.json({ message: "Welcome to elib apis" });
 });
 app.use("/api/users",userRouter)
+app.use("/api/books",bookRouter)
+
 
 app.use(globalErrorHandler)
 
