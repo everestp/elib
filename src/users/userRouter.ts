@@ -1,5 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
-import { createUser } from "./userController";
+import { createUser, loginUser } from "./userController";
 
 
 
@@ -9,4 +9,6 @@ import { createUser } from "./userController";
  // Create the  routes
 
   userRouter.post("/register",createUser);
+  userRouter.post("/login",loginUser)
+
  export default userRouter
