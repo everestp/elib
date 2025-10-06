@@ -159,8 +159,63 @@ const listBook = async(req:Request ,res:Response ,next:NextFunction)=>{
     }
     
 }
+const getSingleBook  = async(req:Request ,res:Response ,next:NextFunction)=>{
+   
+    try {
+   const bookId= req.params.bookId
+   const book = await bookModel.findById(bookId)
+   if(!book){
+  return next( createHttpError(404 ,"Book not found"))
+   }
+        return res.status(200).json(book)
+    } catch (error) {
+          console.log(error);
+        return next(createHttpError(500, "Error fetching ALl book"));
+    }
+    
+}
 const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
-    return res.json({ message: "This is the delete Book  route" });
+     const bookId= req.params.bookId
+      const book = await bookModel.findOne({_id:bookId})
+      if(!book){
+  return next( createHttpError(404 ,"Book not found"))
+   }
+   
+
+   //check access
+    const _req = req as AuthRequest;
+    if (book.author.toString() !== _req.userId) {
+        return next(createHttpError(403, "You can not delete others book."));
+    }
+//delete  file from cloudunary
+const coverFileSplit = book.coverImage.split("/")
+const coverImagePublicId = coverFileSplit.at(-2)+ "/" + coverFileSplit.at(-1)?.split(".").at(-2)
+console.log("Cover file split",coverImagePublicId)
+
+const bookFileSplit = book.file.split('/')
+const bookFilePublicId = bookFileSplit.at(-2)+ "/" + bookFileSplit.at(-1)
+
+
+
+try {
+    
+    await cloudinary.uploader.destroy(coverImagePublicId)
+     await cloudinary.uploader.destroy(bookFilePublicId,{resource_type:"raw"})
+} catch (error) {
+    console.log(error);
+        return next(createHttpError(500, "Error  Deleting form cloudinsry."));
+}
+
+try {
+   const deleteBook =  await bookModel.findByIdAndDelete(book._id)
+   res.sendStatus(204)
+    
+} catch (error) {
+     console.log(error);
+        return next(createHttpError(500, "Error  Deleting Book."));
+}
+
+
 };
 
-export { createBook, updateBook,listBook , deleteBook };
+export { createBook, updateBook,listBook ,getSingleBook, deleteBook };
