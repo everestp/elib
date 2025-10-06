@@ -1,5 +1,5 @@
 import express from 'express'
-import { createBook, deleteBook, updateBook } from './bookController'
+import { createBook, deleteBook, listBook, updateBook } from './bookController'
 import multer from 'multer'
 import path from 'node:path'
 import autheticateRequest from '../middlewares/authMiddleWare'
@@ -18,14 +18,21 @@ limits : {fileSize :3e7}
 // creates a routes
 //Routes to add  book
 
-bookRouter.post("/add",autheticateRequest,upload.fields([
+bookRouter.post("/",autheticateRequest,upload.fields([
     {name: 'coverImage' ,maxCount:1},
     {name: 'file' ,maxCount:1},
 
 ]),createBook)
 
-bookRouter.patch("/update",updateBook)
 
+bookRouter.patch("/:booId",autheticateRequest,upload.fields([
+    {name: 'coverImage' ,maxCount:1},
+    {name: 'file' ,maxCount:1},
+
+]),createBook)
+
+
+bookRouter.get("/", listBook)
 bookRouter.delete("/delete",deleteBook)
 
 export default bookRouter
