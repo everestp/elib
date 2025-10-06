@@ -2,6 +2,7 @@ import express from 'express'
 import { createBook, deleteBook, updateBook } from './bookController'
 import multer from 'multer'
 import path from 'node:path'
+import autheticateRequest from '../middlewares/authMiddleWare'
 
 
 const bookRouter = express.Router()
@@ -17,7 +18,7 @@ limits : {fileSize :3e7}
 // creates a routes
 //Routes to add  book
 
-bookRouter.post("/add",upload.fields([
+bookRouter.post("/add",autheticateRequest,upload.fields([
     {name: 'coverImage' ,maxCount:1},
     {name: 'file' ,maxCount:1},
 
